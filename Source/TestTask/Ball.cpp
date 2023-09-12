@@ -56,15 +56,15 @@ void ABall::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABall::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABall::Look);
 		EnhancedInputComponent->BindAction(RestartLevelAction, ETriggerEvent::Triggered, this, &ABall::RestartLevel);
-		EnhancedInputComponent->BindAction(LeapAction, ETriggerEvent::Triggered, this, &ABall::Leap);
+		EnhancedInputComponent->BindAction(LeapAction, ETriggerEvent::Triggered, this, &ABall::Dash);
 	}
 }
 
 void ABall::Move(const FInputActionValue& Value) {
 	if (PlayerController == nullptr) return;
 	FVector2D MoveValue = Value.Get<FVector2D>();
-	BaseMesh->AddForce(Camera->GetForwardVector() * MoveValue.X * ForceStrenght);
-	BaseMesh->AddForce(Camera->GetRightVector() * MoveValue.Y * ForceStrenght);
+	BaseMesh->AddForce(FVector(Camera->GetForwardVector().X, Camera->GetForwardVector().Y, 0.0f) * MoveValue.X * ForceStrenght);
+	BaseMesh->AddForce(FVector(Camera->GetRightVector().X, Camera->GetRightVector().Y,0.0f) * MoveValue.Y * ForceStrenght);
 }
 
 void ABall::Look(const FInputActionValue& Value) {
@@ -78,6 +78,9 @@ void ABall::RestartLevel(const FInputActionValue& Value) {
 	UGameplayStatics::OpenLevelBySoftObjectPtr(this, GetLevel());
 }
 
-void ABall::Leap(const FInputActionValue& Value) {
-	BaseMesh->AddImpulse(Camera->GetForwardVector() * ImpusleValue, NAME_None, true);
+void ABall::Dash(const FInputActionValue& Value) {
+	if (!(GetWorldTimerManager().IsTimerActive(DashTimer))) {
+		BaseMesh->AddImpulse(FVector(Camera->GetForwardVector().X, Camera->GetForwardVector().Y,0.0f) * ImpusleValue, NAME_None, true);
+		GetWorldTimerManager().SetTimer(DashTimer, DashDelay, false);
+	}
 }

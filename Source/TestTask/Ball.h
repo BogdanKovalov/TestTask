@@ -58,11 +58,17 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
 	float ImpusleValue = 400.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
+	FTimerHandle DashTimer;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
+	float DashDelay = 3.0f;
 private:
 	APlayerController* PlayerController;
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void RestartLevel(const FInputActionValue& Value);
-	void Leap(const FInputActionValue& Value);
+	void Dash(const FInputActionValue& Value);
 };
